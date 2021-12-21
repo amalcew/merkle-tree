@@ -1,4 +1,9 @@
 from hashlib import sha256
+import treelib
+from graphviz import Source
+from os import remove
+from datetime import datetime
+from time import sleep
 
 
 class Node:
@@ -81,3 +86,28 @@ class MerkleTree:
                 if elem == self.nodes[i].name:
                     return True
             return False
+
+    def show(self, engine='treelib', save=False):
+        """ Method printing tree structure, using treelib library """
+        tree = treelib.Tree()
+        for node in self.nodes:
+            if node.name == self.structure.name:
+                tree.create_node(node.name, node.name)  # root node
+            else:
+                tree.create_node(node.name, node.name, parent=node.parent.name)  # branch/leaf node
+
+        if engine == 'graphviz':  # use graphviz frontend to generate the visualization
+            now = datetime.now().strftime("%Y%m%d%H%M%S")
+            tree_name = "tree-%s" % now
+            tree.to_graphviz(filename=tree_name, shape='record')
+            source = Source.from_file(tree_name)
+            source.view()
+            sleep(0.3)
+            if not save:
+                remove(tree_name + ".pdf")
+            remove(tree_name)
+        else:  # use treelib frontend to generate the visualization
+            tree.show()
+            if save:
+                now = datetime.now().strftime("%Y%m%d%H%M%S")
+                tree.save2file("tree-%s" % now)

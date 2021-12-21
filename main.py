@@ -30,11 +30,11 @@ def inclusion_test(tree):
 def main():
     arr = ['alice', 'bob', 'carol', 'david', 'eve', 'fred', 'george', 'hans', 'isabel', 'jeff', 'klaus', 'leon', 'mark',
            'noel']
-    partial_arr = arr[:7]
+    partial_arr = arr[:5]
     tree = MerkleTree(partial_arr)
-    print(tree.get_root_hash())
-
-    inclusion_test(tree)
+    print("Root hash: %s\n" % (tree.get_root_hash()))
+    # inclusion_test(tree)
+    tree.show(engine='graphviz')
 
     # TODO: write appropriate inclusion and consistency check functions, comment the code and make tests
 
