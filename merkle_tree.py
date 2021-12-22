@@ -87,6 +87,20 @@ class MerkleTree:
                     return True
             return False
 
+    def dfs(self):
+        def inorder(struct):
+            if struct.left_child is not None:
+                inorder(struct.left_child)
+
+            if struct.parent is not None:
+                print(struct.name)
+            if struct.parent is None:
+                print(struct.name)
+
+            if struct.right_child is not None:
+                inorder(struct.right_child)
+        inorder(self.structure)
+
     def show(self, engine='treelib', save=False):
         """ Method printing tree structure, using treelib library """
         tree = treelib.Tree()

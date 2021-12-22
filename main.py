@@ -28,15 +28,20 @@ def inclusion_test(tree):
 
 
 def main():
-    arr = ['alice', 'bob', 'carol', 'david', 'eve', 'fred', 'george', 'hans', 'isabel', 'jeff', 'klaus', 'leon', 'mark',
-           'noel']
-    partial_arr = arr[:5]
+    # arr = ['alice', 'bob', 'carol', 'david', 'eve', 'fred', 'george', 'hans', 'isabel', 'jeff', 'klaus', 'leon', 'mark', 'noel']
+    arr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+    partial_arr = arr[:9]
     tree = MerkleTree(partial_arr)
     print("Root hash: %s\n" % (tree.get_root_hash()))
+    # tree.check_consistency(partial_arr)
     # inclusion_test(tree)
     tree.show(engine='graphviz')
+    tree.dfs()
 
-    # TODO: write appropriate inclusion and consistency check functions, comment the code and make tests
+    # TODO:
+    #  1) debug create_parent() method for inappropriate parent-child bound in some cases i.e. for tree with 6 leaves
+    #     (hashes are still correct for some reason, yay...)
+    #   2) rewrite check_inclusion() method to work with a inorder dfs
 
 
 if __name__ == '__main__':
