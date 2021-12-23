@@ -40,6 +40,11 @@ class MerkleTree:
             concatenated_value = left_child.value
             parent = Node(None, None, concatenated_name, concatenated_value)  # create parent node
             left_child.parent = parent  # update child's parent field
+            if left_child.left_child:
+                # verify if parent node have children
+                # (correct inappropriate parent-children bound in specific cases of trees)
+                parent.left_child = left_child.left_child
+                parent.right_child = left_child.right_child
 
         flag = False
         for elem in self.nodes:  # loop checking the occurrence of parent on the nodes list
