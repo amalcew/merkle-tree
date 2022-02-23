@@ -152,7 +152,7 @@ class MerkleTree:
 
         tree_name = "tree-%s.json" % now
         file = open(tree_name, "w")
-        json.dump(self.nodes_, file, indent=6)  # dump to json
+        json.dump(self.nodes_dict, file, indent=6)  # dump to json
         file.close()
 
     def show(self, engine='treelib', save=False):
