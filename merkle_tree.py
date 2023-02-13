@@ -145,6 +145,14 @@ class MerkleTree:
                 tree.create_node(node.name, node.name, parent=node.parent.name)  # branch/leaf node
 
         if engine == 'graphviz':  # use graphviz frontend to generate the visualization
+            tree = treelib.Tree()
+            for node in self.nodes_list:
+                val = "{%s |{%s...%s}}" % (node.name.replace("|", "\|"), node.hash_value[:6], node.hash_value[-6:])
+                if node.name == self.structure.name:
+                    tree.create_node(val, node.name)  # root node
+                else:
+                    tree.create_node(val, node.name, parent=node.parent.name)  # branch/leaf node
+
             tree_name = "tree-%s" % now
             tree.to_graphviz(filename=tree_name, shape='record')
             source = Source.from_file(tree_name)
