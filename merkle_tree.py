@@ -9,10 +9,11 @@ from datetime import datetime
 from time import sleep
 
 now = datetime.now().strftime("%Y%m%d%H%M%S")
+get_hash = lambda value: sha256(value.encode('utf-8')).hexdigest()  # generate hash from a given value
 
 
 class Node:
-    """ Stores crucial data of the parent node, children nodes, name and values """
+    """ Stores data of the parent node, children nodes, name and values """
 
     def __init__(self, _left_child, _right_child, _name, _value):
         self.parent = None
@@ -20,7 +21,7 @@ class Node:
         self.right_child = _right_child
         self.name = _name
         self.value = _value
-        self.hash_value = sha256(self.value.encode('utf-8')).hexdigest()
+        self.hash_value = get_hash(self.value)
 
 
 class MerkleTree:
@@ -29,19 +30,17 @@ class MerkleTree:
     def __init__(self, lst):
         self.nodes_dict = dict()
         self.nodes_list = list()
-        self.leaves_list = list()
 
         nodes = list()  # temporary list used in build_tree() function
         for elem in lst:
             node = Node(None, None, elem, elem)
             nodes.append(node)
-            self.leaves_list.append(node.name)
         self.structure = self._build_tree(nodes)
         self._generate_data_structures()  # generate nodes_dict and nodes_list
 
     @staticmethod
     def _create_parent(_left_child, _right_child):
-        """ Creates the parent node from given children and updates fields of children and parent """
+        """ Create the parent node from given children and updates fields of children and parent """
 
         if _right_child is not None:  # case 1: parent has two children
             concatenated_name = _left_child.name + "|" + _right_child.name
@@ -56,14 +55,14 @@ class MerkleTree:
             _left_child.parent = parent  # update child's parent field
             if _left_child.left_child:
                 # verify if parent node have children
-                # (correct inappropriate parent-children bound in specific cases of trees)
+                # (correct incorrect parent-children bound in specific cases of trees)
                 parent.left_child = _left_child.left_child
                 parent.right_child = _left_child.right_child
 
         return parent
 
     def _build_tree(self, _lst):
-        """ Recursive method generating tree structure from given list of leaves """
+        """ Recursively generate tree structure from given list of leaves """
 
         if len(_lst) == 1:
             return _lst[0]
@@ -101,7 +100,7 @@ class MerkleTree:
                 self.nodes_list.insert(0, _node)
 
         def generator(_node):
-            """ Recursive method that add node parameters as dictionary to nodes dictionary """
+            """ Recursively add dictionary containing node parameters to nodes dictionary """
 
             if _node.left_child:  # traverse through left subtree
                 generator(_node.left_child)
@@ -127,26 +126,6 @@ class MerkleTree:
 
         return self.structure.hash_value
 
-    def check_inclusion(self, elem):
-        """ Check if passed node is in the tree """
-
-        # TODO: rewrite the function to use the dfs, not the loop
-        for node in self.nodes_list:
-            if elem == node.name or elem == node.hash_value:
-                return True
-        return False
-
-    def check_consistency(self, subtree):
-        """ Check if passed subtree is part of main tree"""
-
-        # TODO: rewrite the function to generate consistency proof
-        for i in range(len(subtree.leaves_list)):
-            main_leaf = self.leaves_list[i]
-            sub_leaf = subtree.leaves_list[i]
-            if main_leaf != sub_leaf:
-                return False
-        return True
-
     def dump(self):
         """ Dumps the nodes dictionary to .json file """
 
@@ -170,7 +149,7 @@ class MerkleTree:
             tree.to_graphviz(filename=tree_name, shape='record')
             source = Source.from_file(tree_name)
 
-            if platform in ['linux', 'linux2']:                      # linux
+            if platform in ['linux', 'linux2']:  # linux
                 if os.fork():  # parent process
                     os.wait()  # wait for child process to finish
                     if not save:
@@ -179,25 +158,10 @@ class MerkleTree:
                 else:  # child process
                     source.view()
                     sleep(1)
-            else:                                                     # windows
+            else:  # windows
                 source.view()
                 remove(tree_name)
         else:  # use treelib frontend to generate the visualization
             tree.show()
             if save:
                 tree.save2file("tree-%s" % now)
-
-    def dfs(self):
-        def _dfs(struct):
-            if struct.left_child is not None:
-                _dfs(struct.left_child)
-
-            if struct.parent is not None:
-                print(struct.name)
-            if struct.parent is None:
-                print(struct.name)
-
-            if struct.right_child is not None:
-                _dfs(struct.right_child)
-
-        _dfs(self.structure)
