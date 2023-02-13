@@ -30,7 +30,7 @@ False
 
 ## What is Consistency Proof?
 
-Consistency Proof is a simple test that allows us to verify the consistency of two trees (e.g. before and after adding some records to the tree). Consisceny Check is successful when two criteria are met:
+Consistency Proof is a simple test that allows us to verify the consistency of two trees (e.g. before and after adding some records to the tree). Consistency check is successful when two criteria are met:
 
 - Does main tree fully contain subtree? (if main tree had the same amount of records as subtree, would its root hash be the same as subtree root hash?)
 
